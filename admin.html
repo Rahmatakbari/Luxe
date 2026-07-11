@@ -1,6 +1,120 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" data-theme="light">
 <head>
+<script>/* LUXE_ADMIN_LOCK v2 - Simple + Reliable */
+(function(){
+  'use strict';
+  try {
+    // ═══ Configuration ═══
+    var CORRECT_PASSWORD = 'Rahmat@313';
+    var SESSION_KEY = 'luxe_admin_ok';
+    var SESSION_DAYS = 7;
+    
+    // ═══ Check session ═══
+    var session = localStorage.getItem(SESSION_KEY);
+    if (session) {
+      var expires = parseInt(session, 10);
+      if (Date.now() < expires) {
+        // Valid session - show logout button after DOM ready
+        document.addEventListener('DOMContentLoaded', function(){
+          try {
+            var btn = document.createElement('button');
+            btn.innerHTML = '🔓 خروج ادمین';
+            btn.style.cssText = 'position:fixed;top:12px;left:12px;z-index:2147483647;padding:8px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 6px 20px rgba(239,68,68,.4);font-family:inherit;';
+            btn.onclick = function(){
+              if (confirm('آیا از پنل ادمین خارج می‌شوید؟')) {
+                localStorage.removeItem(SESSION_KEY);
+                location.reload();
+              }
+            };
+            document.body.appendChild(btn);
+          } catch(_){}
+        });
+        return; // ← اجازه بارگذاری عادی صفحه
+      } else {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+    
+    // ═══ Not logged in: block the page and show login ═══
+    document.documentElement.style.visibility = 'hidden';
+    
+    function showLogin(){
+      document.documentElement.style.visibility = 'visible';
+      // Clear the entire page
+      try { document.body.innerHTML = ''; } catch(_){}
+      document.title = 'ورود ادمین | Luxe';
+      
+      var overlay = document.createElement('div');
+      overlay.id = 'luxe-admin-login';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:linear-gradient(135deg,#0f172a,#1e1b4b,#312e81);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;font-family:Vazirmatn,IRANSans,Tahoma,system-ui,sans-serif;';
+      overlay.innerHTML = 
+        '<div style="width:100%;max-width:400px;background:rgba(255,255,255,.08);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:40px 32px;box-shadow:0 30px 80px rgba(0,0,0,.5);">' +
+          '<div style="text-align:center;color:rgba(255,255,255,.4);font-size:.75rem;letter-spacing:6px;font-weight:700;margin-bottom:24px;">L U X E · A D M I N</div>' +
+          '<div style="width:70px;height:70px;margin:0 auto 20px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border-radius:20px;display:grid;place-items:center;font-size:2rem;box-shadow:0 16px 40px rgba(139,92,246,.4);">🔐</div>' +
+          '<h1 style="text-align:center;color:#fff;font-size:1.5rem;font-weight:900;margin:0 0 6px;">پنل مدیریت</h1>' +
+          '<p style="text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;margin:0 0 28px;">رمز عبور مدیر را وارد کنید</p>' +
+          '<form id="luxe-login-form" style="display:flex;flex-direction:column;gap:14px;">' +
+            '<input type="password" id="luxe-login-input" placeholder="••••••••" required autocomplete="off" style="width:100%;padding:14px 16px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;font-size:1rem;font-weight:600;text-align:center;letter-spacing:2px;direction:ltr;outline:none;font-family:inherit;box-sizing:border-box;">' +
+            '<button type="submit" id="luxe-login-btn" style="padding:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px rgba(139,92,246,.4);">ورود به پنل</button>' +
+            '<div id="luxe-login-msg" style="min-height:20px;text-align:center;font-size:.85rem;font-weight:600;color:#fca5a5;"></div>' +
+          '</form>' +
+          '<a href="index.html" style="display:block;text-align:center;margin-top:20px;color:rgba(255,255,255,.5);text-decoration:none;font-size:.85rem;">← بازگشت به صفحه اصلی</a>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      
+      var input = document.getElementById('luxe-login-input');
+      var form = document.getElementById('luxe-login-form');
+      var msg = document.getElementById('luxe-login-msg');
+      var btn = document.getElementById('luxe-login-btn');
+      
+      setTimeout(function(){ input.focus(); }, 100);
+      
+      form.onsubmit = function(e){
+        e.preventDefault();
+        var val = input.value.trim();
+        if (val === CORRECT_PASSWORD) {
+          msg.style.color = '#86efac';
+          msg.textContent = '✅ ورود موفق — در حال بارگذاری...';
+          btn.disabled = true;
+          input.disabled = true;
+          var expires = Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000;
+          localStorage.setItem(SESSION_KEY, String(expires));
+          setTimeout(function(){ location.reload(); }, 600);
+        } else {
+          msg.style.color = '#fca5a5';
+          msg.textContent = '❌ رمز عبور اشتباه است';
+          input.value = '';
+          input.focus();
+          // Shake
+          var card = overlay.firstChild;
+          card.style.animation = 'none';
+          setTimeout(function(){
+            card.style.animation = 'luxe-shake .5s';
+          }, 10);
+        }
+      };
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', showLogin);
+    } else {
+      showLogin();
+    }
+    
+    // Add shake animation
+    var style = document.createElement('style');
+    style.textContent = '@keyframes luxe-shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-10px);}40%,80%{transform:translateX(10px);}}';
+    document.head.appendChild(style);
+    
+  } catch(err) {
+    console.error('[Luxe Admin Lock] Error:', err);
+    // اگر خطایی رخ داد، نشان بده تا کاربر متوجه شود
+    document.documentElement.style.visibility = 'visible';
+  }
+})();
+</script>
+
 <script>/* LUXE_SAFE_CLOSEST_POLYFILL v1 - fixes: e.target.closest is not a function */
 (function(){
   try {
@@ -7106,223 +7220,7 @@ input::placeholder, textarea::placeholder {
 })();
 </script>
 
-<script>/* LUXE_ADMIN_LOCK v1 - محافظ پنل ادمین */
-(function(){
-  'use strict';
-  if (window.__LUXE_ADMIN_LOCK__) return; window.__LUXE_ADMIN_LOCK__ = true;
 
-  // ═══ تنظیمات ═══
-  var ADMIN_PASS_HASH = 'a9b2c7e4f1d8'; // hash of Rahmat@313 (placeholder — real check below)
-  var SESSION_KEY = 'luxe_admin_session';
-  var ATTEMPTS_KEY = 'luxe_admin_attempts';
-  var LOCK_KEY = 'luxe_admin_locked_until';
-  var SESSION_DAYS = 7;
-  var MAX_ATTEMPTS = 5;
-  var LOCK_MINUTES = 1;
-
-  // Simple hash (نه امنیت واقعی — فقط برای obfuscation جلوی نگاه‌های سریع)
-  function hash(s){
-    var h = 5381;
-    for (var i = 0; i < s.length; i++) h = ((h << 5) + h) + s.charCodeAt(i);
-    return String(Math.abs(h));
-  }
-  var CORRECT_HASH = hash('Rahmat@313');
-
-  // ═══ بررسی Session معتبر ═══
-  function isLoggedIn(){
-    try {
-      var s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-      if (!s || !s.expires) return false;
-      if (Date.now() > s.expires) { localStorage.removeItem(SESSION_KEY); return false; }
-      return s.token === hash('luxe_admin_' + s.created);
-    } catch(_) { return false; }
-  }
-
-  function createSession(){
-    var created = Date.now();
-    var session = {
-      created: created,
-      expires: created + SESSION_DAYS * 24 * 60 * 60 * 1000,
-      token: hash('luxe_admin_' + created)
-    };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    localStorage.removeItem(ATTEMPTS_KEY);
-    localStorage.removeItem(LOCK_KEY);
-  }
-
-  window.luxeAdminLogout = function(){
-    localStorage.removeItem(SESSION_KEY);
-    location.reload();
-  };
-
-  // ═══ اگر لاگین کرده، نمایش عادی ═══
-  if (isLoggedIn()) {
-    // اضافه کردن دکمه خروج بالای پنل
-    document.addEventListener('DOMContentLoaded', function(){
-      try {
-        var btn = document.createElement('button');
-        btn.innerHTML = '🔓 خروج ادمین';
-        btn.style.cssText = 'position:fixed;top:12px;left:12px;z-index:99999;padding:8px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 6px 20px rgba(239,68,68,.4);font-family:inherit;';
-        btn.onmouseover = function(){ this.style.transform='translateY(-2px)'; };
-        btn.onmouseout = function(){ this.style.transform=''; };
-        btn.onclick = function(){
-          if (confirm('آیا از پنل ادمین خارج می‌شوید؟')) window.luxeAdminLogout();
-        };
-        document.body.appendChild(btn);
-      } catch(_){}
-    });
-    return; // ادامه بارگذاری عادی
-  }
-
-  // ═══ اگر لاگین نکرده، پنل رو مخفی کن و صفحه لاگین بساز ═══
-  document.documentElement.style.visibility = 'hidden';
-  document.addEventListener('DOMContentLoaded', function(){
-    try { document.body.innerHTML = ''; } catch(_){}
-    showLoginScreen();
-    document.documentElement.style.visibility = 'visible';
-  });
-
-  // اگر DOM قبلاً لود شده باشه
-  if (document.readyState !== 'loading') {
-    try { document.body && (document.body.innerHTML = ''); } catch(_){}
-    showLoginScreen();
-    document.documentElement.style.visibility = 'visible';
-  }
-
-  function showLoginScreen(){
-    var lockedUntil = parseInt(localStorage.getItem(LOCK_KEY) || '0', 10);
-    var isLocked = Date.now() < lockedUntil;
-
-    var overlay = document.createElement('div');
-    overlay.id = '__luxe-admin-lock';
-    overlay.innerHTML = ''
-      + '<style>'
-      + '  #__luxe-admin-lock * { box-sizing:border-box; font-family:"Vazirmatn","IRANSans","Tahoma",sans-serif; }'
-      + '  #__luxe-admin-lock { position:fixed; inset:0; z-index:2147483647; background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#312e81 100%); display:grid; place-items:center; padding:20px; overflow-y:auto; }'
-      + '  #__luxe-admin-lock::before { content:""; position:absolute; inset:0; background:'
-      + '    radial-gradient(circle at 20% 30%, rgba(139,92,246,.3) 0%, transparent 50%),'
-      + '    radial-gradient(circle at 80% 70%, rgba(236,72,153,.25) 0%, transparent 50%),'
-      + '    radial-gradient(circle at 50% 100%, rgba(99,102,241,.3) 0%, transparent 50%);'
-      + '    animation: __lock-bg 15s ease-in-out infinite alternate; }'
-      + '  @keyframes __lock-bg { 0%{transform:scale(1) rotate(0deg);} 100%{transform:scale(1.2) rotate(20deg);} }'
-      + '  .__lock-card { position:relative; z-index:1; width:100%; max-width:440px; background:rgba(255,255,255,.05); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); border:1px solid rgba(255,255,255,.15); border-radius:28px; padding:44px 36px; box-shadow:0 32px 80px rgba(0,0,0,.5); animation:__lock-in .6s cubic-bezier(.34,1.56,.64,1); }'
-      + '  @keyframes __lock-in { from{opacity:0; transform:translateY(30px) scale(.95);} to{opacity:1; transform:translateY(0) scale(1);} }'
-      + '  .__lock-icon { width:80px; height:80px; margin:0 auto 24px; background:linear-gradient(135deg,#8b5cf6,#ec4899); border-radius:22px; display:grid; place-items:center; font-size:2.4rem; box-shadow:0 20px 40px rgba(139,92,246,.4); animation:__lock-float 3s ease-in-out infinite; }'
-      + '  @keyframes __lock-float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }'
-      + '  .__lock-title { text-align:center; color:#fff; font-size:1.7rem; font-weight:900; margin-bottom:8px; letter-spacing:-.5px; }'
-      + '  .__lock-sub { text-align:center; color:rgba(255,255,255,.6); font-size:.95rem; margin-bottom:32px; }'
-      + '  .__lock-form { display:flex; flex-direction:column; gap:16px; }'
-      + '  .__lock-input-wrap { position:relative; }'
-      + '  .__lock-input { width:100%; padding:16px 52px 16px 20px; background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.1); border-radius:16px; color:#fff; font-size:1rem; font-weight:600; text-align:center; letter-spacing:2px; direction:ltr; transition:all .3s; outline:none; }'
-      + '  .__lock-input:focus { background:rgba(255,255,255,.12); border-color:#8b5cf6; box-shadow:0 0 0 4px rgba(139,92,246,.2); }'
-      + '  .__lock-input::placeholder { color:rgba(255,255,255,.3); letter-spacing:normal; text-align:center; }'
-      + '  .__lock-eye { position:absolute; left:16px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,.5); cursor:pointer; font-size:1.2rem; padding:6px; }'
-      + '  .__lock-eye:hover { color:#fff; }'
-      + '  .__lock-btn { padding:16px 24px; background:linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; border:none; border-radius:16px; font-size:1rem; font-weight:800; cursor:pointer; transition:all .3s; box-shadow:0 12px 30px rgba(139,92,246,.4); font-family:inherit; }'
-      + '  .__lock-btn:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(139,92,246,.5); }'
-      + '  .__lock-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }'
-      + '  .__lock-msg { min-height:24px; text-align:center; font-size:.9rem; font-weight:600; margin-top:4px; }'
-      + '  .__lock-msg.err { color:#fca5a5; }'
-      + '  .__lock-msg.ok { color:#86efac; }'
-      + '  .__lock-back { display:block; text-align:center; margin-top:24px; color:rgba(255,255,255,.5); text-decoration:none; font-size:.85rem; transition:color .3s; }'
-      + '  .__lock-back:hover { color:#fff; }'
-      + '  .__lock-hint { text-align:center; margin-top:20px; padding:12px; background:rgba(139,92,246,.1); border-radius:12px; color:rgba(255,255,255,.6); font-size:.8rem; line-height:1.6; }'
-      + '  .__lock-brand { text-align:center; margin-bottom:32px; color:rgba(255,255,255,.4); font-size:.75rem; letter-spacing:8px; font-weight:700; text-transform:uppercase; }'
-      + '  .__lock-shake { animation:__lock-shake .5s; }'
-      + '  @keyframes __lock-shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);} }'
-      + '</style>'
-      + '<div class="__lock-card" id="__lock-card">'
-      + '  <div class="__lock-brand">L U X E · A D M I N</div>'
-      + '  <div class="__lock-icon">🔐</div>'
-      + '  <h1 class="__lock-title">پنل مدیریت</h1>'
-      + '  <p class="__lock-sub">برای دسترسی، رمز عبور مدیر را وارد کنید</p>'
-      + '  <form class="__lock-form" id="__lock-form">'
-      + '    <div class="__lock-input-wrap">'
-      + '      <input type="password" class="__lock-input" id="__lock-input" placeholder="••••••••••" autocomplete="off" '+ (isLocked ? 'disabled' : 'autofocus') +'>'
-      + '      <button type="button" class="__lock-eye" id="__lock-eye" tabindex="-1">👁</button>'
-      + '    </div>'
-      + '    <button type="submit" class="__lock-btn" id="__lock-btn" '+(isLocked?'disabled':'')+'>ورود به پنل</button>'
-      + '    <div class="__lock-msg" id="__lock-msg"></div>'
-      + '  </form>'
-      + '  <a href="index.html" class="__lock-back">← بازگشت به صفحه اصلی</a>'
-      + '  <div class="__lock-hint">💡 پس از ورود موفق، تا ۷ روز به‌طور خودکار وارد می‌شوید</div>'
-      + '</div>';
-
-    document.body.appendChild(overlay);
-
-    var input = document.getElementById('__lock-input');
-    var btn = document.getElementById('__lock-btn');
-    var msg = document.getElementById('__lock-msg');
-    var card = document.getElementById('__lock-card');
-    var eye = document.getElementById('__lock-eye');
-    var form = document.getElementById('__lock-form');
-
-    // Toggle password visibility
-    eye.onclick = function(){
-      input.type = input.type === 'password' ? 'text' : 'password';
-      eye.textContent = input.type === 'password' ? '👁' : '🙈';
-    };
-
-    // Countdown if locked
-    if (isLocked) {
-      startCountdown(lockedUntil);
-    }
-
-    form.onsubmit = function(e){
-      e.preventDefault();
-      var val = input.value.trim();
-      if (!val) return;
-
-      if (hash(val) === CORRECT_HASH) {
-        msg.className = '__lock-msg ok';
-        msg.textContent = '✅ ورود موفق — در حال بارگذاری پنل...';
-        createSession();
-        btn.disabled = true;
-        input.disabled = true;
-        setTimeout(function(){ location.reload(); }, 800);
-      } else {
-        var attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0', 10) + 1;
-        localStorage.setItem(ATTEMPTS_KEY, String(attempts));
-        card.classList.add('__lock-shake');
-        setTimeout(function(){ card.classList.remove('__lock-shake'); }, 500);
-
-        if (attempts >= MAX_ATTEMPTS) {
-          var lockUntil = Date.now() + LOCK_MINUTES * 60 * 1000;
-          localStorage.setItem(LOCK_KEY, String(lockUntil));
-          localStorage.removeItem(ATTEMPTS_KEY);
-          input.disabled = true;
-          btn.disabled = true;
-          startCountdown(lockUntil);
-        } else {
-          msg.className = '__lock-msg err';
-          msg.textContent = '❌ رمز اشتباه است ('+ (MAX_ATTEMPTS - attempts) +' تلاش باقی مانده)';
-          input.value = '';
-          input.focus();
-        }
-      }
-    };
-
-    function startCountdown(until){
-      var tick = function(){
-        var remaining = Math.max(0, until - Date.now());
-        if (remaining === 0) {
-          msg.className = '__lock-msg ok';
-          msg.textContent = '✅ اکنون می‌توانید دوباره تلاش کنید';
-          input.disabled = false;
-          btn.disabled = false;
-          input.focus();
-          return;
-        }
-        var sec = Math.ceil(remaining / 1000);
-        msg.className = '__lock-msg err';
-        msg.textContent = '🔒 قفل شد — لطفاً '+ sec +' ثانیه صبر کنید';
-        setTimeout(tick, 500);
-      };
-      tick();
-    }
-  }
-})();
-</script>
 
 <style id="__v16-voice-hidden">#__v16-voice-btn{display:none !important;visibility:hidden !important;}</style>
 <script>/* LUXE_CART_RECOVERY v1 - Auto-fix cart display bug */
@@ -7522,6 +7420,183 @@ input::placeholder, textarea::placeholder {
 })();
 </script>
 
+<style id="__admin-cleanup-v3">
+/* پاک کردن UI بهم‌ریخته */
+.admin-side { display: none !important; }
+.admin-topbar { display: none !important; }
+.admin-layout {
+  grid-template-columns: 1fr !important;
+  display: block !important;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.admin-main {
+  padding: 20px !important;
+  background: transparent !important;
+}
+/* مخفی کردن بخش‌های تکراری قدیمی */
+.admin-main > .dashboard-grid,
+.admin-main > .stats-grid,
+.admin-main > .charts-row,
+.admin-main > section:not(#__v18-dashboard):not(#__v19-manager):not(#__v20-panel) {
+  display: none !important;
+}
+/* بستن فوری هر مودالی که ناخواسته باز شده باشه */
+.__v19-modal-bg:not(.user-opened) { display: none !important; }
+#add-cat-modal { display: none !important; }
+/* بهبود تصاویر محصولات — اگر load نشدن، placeholder خوب بذار */
+.__v19-img {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+  min-width: 50px !important;
+  min-height: 50px !important;
+}
+/* حذف overlay قرمز روی تصاویر */
+.__v19-table td img[src=""], .__v19-table td img:not([src]) {
+  visibility: hidden;
+}
+/* پنل چت کاربر که در بالای صفحه جا مانده رو مرتب کن */
+body { padding-top: 0 !important; }
+/* Bottom nav که در ادمین لازم نیست */
+.bottom-nav, #bottom-nav, .mobile-nav { display: none !important; }
+</style>
+
+
+<style id="__modal-fix-v5-mobile">
+/* ═══ SUPER STRONG MODAL FIX FOR MOBILE + DESKTOP ═══ */
+/* Force close all modals unless explicitly opened by user */
+.__v19-modal-bg,
+#add-cat-modal,
+#confirm-modal,
+[id*="modal-bg"]:not(.force-open) {
+  display: none !important;
+}
+/* Only when open, show as full-screen overlay */
+.__v19-modal-bg.open,
+[id*="modal-bg"].open {
+  display: flex !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2147483647 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  padding: 16px !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding-top: 5vh !important;
+}
+.__v19-modal-bg.open .__v19-modal {
+  position: relative !important;
+  background: #fff !important;
+  color: #000 !important;
+  border-radius: 20px !important;
+  padding: 24px 20px !important;
+  max-width: 500px !important;
+  width: 100% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  margin: 0 auto !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5) !important;
+  transform: none !important;
+  inset: auto !important;
+}
+[data-theme="dark"] .__v19-modal-bg.open .__v19-modal {
+  background: #1f2937 !important;
+  color: #fff !important;
+}
+.__v19-modal-bg.open .__v19-modal input,
+.__v19-modal-bg.open .__v19-modal textarea,
+.__v19-modal-bg.open .__v19-modal select {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* موبایل مخصوصاً */
+@media (max-width: 640px) {
+  .__v19-modal-bg.open {
+    padding: 10px !important;
+    padding-top: 20px !important;
+  }
+  .__v19-modal-bg.open .__v19-modal {
+    max-width: calc(100vw - 20px) !important;
+    padding: 20px 16px !important;
+  }
+}
+
+/* بستن صفحه‌های چت که کنار جا می‌مانند */
+.__v20-panel, #__v20-panel {
+  display: block !important;
+  clear: both !important;
+}
+.admin-layout {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+}
+</style>
+<script>/* MODAL_FIX_V5_MOBILE - Bulletproof */
+(function(){
+  if (window.__MODAL_V5__) return; window.__MODAL_V5__ = true;
+  
+  function closeAllModals(){
+    document.querySelectorAll('.__v19-modal-bg, [id*="modal-bg"]').forEach(function(m){
+      m.classList.remove('open');
+      m.style.display = 'none';
+    });
+    document.body.style.overflow = '';
+  }
+  
+  // Close on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(closeAllModals, 100); });
+  } else {
+    setTimeout(closeAllModals, 100);
+  }
+  
+  // Handle open modal
+  document.addEventListener('click', function(e){
+    // Click outside modal to close
+    var openModal = document.querySelector('.__v19-modal-bg.open');
+    if (openModal && e.target === openModal) {
+      openModal.classList.remove('open');
+      openModal.style.display = 'none';
+      document.body.style.overflow = '';
+      return;
+    }
+    
+    // Handle add product button
+    var addBtn = e.target.closest && e.target.closest('#__v19-add, .__v19-edit');
+    if (addBtn) {
+      // Wait for modal to be populated, then force it to show correctly
+      setTimeout(function(){
+        var m = document.getElementById('__v19-modal-bg');
+        if (m) {
+          m.classList.add('open');
+          m.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }, 50);
+    }
+    
+    // Handle close buttons
+    if (e.target.matches && (e.target.matches('#pm-cancel, #__v22-story-close') || e.target.textContent === 'لغو')) {
+      closeAllModals();
+    }
+  }, true);
+  
+  // Escape to close
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeAllModals();
+  });
+})();
+</script>
 </head>
 <body class="admin-body">
 
@@ -15730,5 +15805,44 @@ html.__v15-loading::before {
   #__v24-progress > div { font-size: .75rem !important; }
 }
 </style>
-</body>
+<script>/* LUXE_ADMIN_UI_FIX v3 */
+(function(){
+  if (window.__ADMIN_UI_FIX__) return; window.__ADMIN_UI_FIX__ = true;
+  
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(function(){
+      try {
+        // بستن همه مودال‌های ناخواسته
+        document.querySelectorAll('.__v19-modal-bg, .modal').forEach(function(m){
+          if (!m.classList.contains('user-opened')) {
+            m.classList.remove('open', 'active');
+            m.style.display = 'none';
+          }
+        });
+        
+        // اطمینان از اینکه فقط یک مودال باز میشه
+        var origAdd = DOMTokenList.prototype.add;
+        // Override برای modal opens: user-opened flag اضافه کن
+        document.addEventListener('click', function(e){
+          try {
+            var btn = e.target && e.target.closest && e.target.closest('#__v19-add, .__v19-edit, .__v19-add');
+            if (btn) {
+              setTimeout(function(){
+                var m = document.getElementById('__v19-modal-bg');
+                if (m) m.classList.add('user-opened');
+              }, 100);
+            }
+          } catch(_){}
+        }, true);
+        
+        // پاک کردن پنل چت floating که در بالای صفحه جا مانده
+        document.querySelectorAll('#__v20-user-dot, #__v22-stories-bar, #__v24-fab, #__v21-flash, #__v21-recent-btn, #__v21-compare-btn, .__v17-currency, #__v24-progress').forEach(function(el){
+          if (el) el.style.display = 'none';
+        });
+      } catch(_){}
+    }, 500);
+  });
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a198cb0f0f772097',t:'MTc4Mzc4MzIzNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
