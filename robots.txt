@@ -1,0 +1,28 @@
+# Luxe - robots.txt
+# Website: https://rahmatakbari.github.io/luxe/
+
+User-agent: *
+Allow: /
+
+# صفحات که نباید index بشن
+Disallow: /admin.html
+Disallow: /checkout.html
+Disallow: /profile.html
+
+# فایل‌های سیستمی
+Disallow: /sw.js
+Disallow: /manifest.json
+Disallow: /offline.html
+
+# سایت مپ
+Sitemap: https://rahmatakbari.github.io/luxe/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin.html
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin.html

@@ -1,0 +1,51 @@
+{
+  "name": "Luxe — فروشگاه لوکس آنلاین",
+  "short_name": "Luxe",
+  "description": "تجربه خرید آنلاین لوکس با بهترین برندها",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f8ff",
+  "theme_color": "#2563eb",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["shopping", "lifestyle", "business"],
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "فروشگاه",
+      "short_name": "فروشگاه",
+      "description": "مشاهده همه محصولات",
+      "url": "./shop.html",
+      "icons": [{"src": "images/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "سبد خرید",
+      "short_name": "سبد",
+      "description": "مشاهده سبد خرید",
+      "url": "./cart.html",
+      "icons": [{"src": "images/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "حساب من",
+      "short_name": "حساب",
+      "description": "پروفایل کاربری",
+      "url": "./profile.html",
+      "icons": [{"src": "images/icon-192.png", "sizes": "192x192"}]
+    }
+  ]
+}
